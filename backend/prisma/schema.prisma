@@ -1,0 +1,50 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model messages {
+  id         Int       @id @default(autoincrement())
+  rental_id  Int
+  user_id    Int
+  message    String    @db.Text
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+  rentals    rentals   @relation(fields: [rental_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "messages_ibfk_1")
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "messages_ibfk_2")
+
+  @@index([rental_id], map: "idx_rental")
+  @@index([user_id], map: "idx_user")
+}
+
+model rentals {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  surface     Decimal    @db.Decimal(10, 2)
+  price       Decimal    @db.Decimal(10, 2)
+  picture     String?    @db.VarChar(500)
+  description String     @db.Text
+  owner_id    Int
+  created_at  DateTime?  @default(now()) @db.Timestamp(0)
+  updated_at  DateTime?  @default(now()) @db.Timestamp(0)
+  messages    messages[]
+  users       users      @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "rentals_ibfk_1")
+
+  @@index([owner_id], map: "idx_owner")
+}
+
+model users {
+  id         Int        @id @default(autoincrement())
+  email      String     @unique(map: "email") @db.VarChar(255)
+  name       String     @db.VarChar(255)
+  password   String     @db.VarChar(255)
+  created_at DateTime?  @default(now()) @db.Timestamp(0)
+  updated_at DateTime?  @default(now()) @db.Timestamp(0)
+  messages   messages[]
+  rentals    rentals[]
+}
