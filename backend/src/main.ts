@@ -28,6 +28,7 @@ async function bootstrap() {
       'API back-end du projet ChâTop : gestion des locations, utilisateurs et messages',
     )
     .setVersion('0.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, configSwagger);

@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -11,7 +12,10 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { JwtGuard } from './guards/jwt.guard';
 import { TokenResponseDto } from './dto/token-response.dto';
+import { UserResponseDto } from 'src/users/dto/user-response.dto';
+import type { Request } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -78,5 +82,31 @@ export class AuthController {
         body.password,
       ),
     };
+  }
+
+  /**
+   * Retourne les informations de l'utilisateur actuellement authentifié
+   *
+   * @param req Requête HTTP dont `req.user` est peuplé par `JwtStrategy.validate()`
+   * @returns Les informations de l'utilisateur courant (sans le mot de passe)
+   * @throws {UnauthorizedException} Si le token est absent, invalide, expiré, ou si l'utilisateur correspondant n'existe plus en base
+   */
+  @ApiOperation({
+    summary: "Retourne les informations de l'utilisateur authentifié",
+    description:
+      'Route protégée : nécessite un token JWT valide (obtenu via `/auth/login` ou `/auth/register`) transmis dans le header `Authorization: Bearer <token>`.',
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: "Retourne l'utilisateur courant",
+    type: UserResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token manquant, invalide, expiré, ou utilisateur introuvable',
+  })
+  @UseGuards(JwtGuard)
+  @Get('me')
+  me(@Req() req: Request) {
+    return req.user;
   }
 }
