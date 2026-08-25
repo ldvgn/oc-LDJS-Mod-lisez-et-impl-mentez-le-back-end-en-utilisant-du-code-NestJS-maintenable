@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, users } from 'generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -10,9 +10,9 @@ export class UsersService {
    * Recherche un utilisateur par email
    *
    * @param email Adresse email de l'utilisateur recherché
-   * @returns L'utilisateur, ou `null` si introuvable
+   * @returns L'utilisateur
    */
-  findUniqueByEmail(email: string): Promise<users | null> {
+  findByEmail(email: string): Promise<users | null> {
     return this.prismaService.users.findUnique({ where: { email } });
   }
 
@@ -30,12 +30,17 @@ export class UsersService {
    * Recherche un utilisateur par son id
    *
    * @param id Identifiant de l'utilisateur recherché
-   * @returns L'utilisateur (sans le champ `password`), ou `null` si introuvable
+   * @returns L'utilisateur (sans le champ `password`)
+   * @throws {NotFoundException} Si l'utilisateur est introuvable
    */
-  findUniqueById(id: number): Promise<Omit<users, 'password'> | null> {
-    return this.prismaService.users.findUnique({
+  async findOne(id: number): Promise<Omit<users, 'password'>> {
+    const user = await this.prismaService.users.findUnique({
       where: { id },
       omit: { password: true },
     });
+
+    if (!user) throw new NotFoundException('user not found');
+
+    return user;
   }
 }

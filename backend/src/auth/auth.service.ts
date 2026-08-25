@@ -24,7 +24,7 @@ export class AuthService {
    * @throws {UnauthorizedException} Si l'email est inconnu ou si le mot de passe est incorrect
    */
   async login(email: string, password: string) {
-    const user = await this.usersService.findUniqueByEmail(email);
+    const user = await this.usersService.findByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -44,7 +44,7 @@ export class AuthService {
    * @throws {ConflictException} Si un utilisateur existe déjà avec cet email
    */
   async register(email: string, name: string, password: string) {
-    const user = await this.usersService.findUniqueByEmail(email);
+    const user = await this.usersService.findByEmail(email);
     if (user) throw new ConflictException('Email already exist');
 
     const hashPassword = await bcrypt.hash(password, 10);
