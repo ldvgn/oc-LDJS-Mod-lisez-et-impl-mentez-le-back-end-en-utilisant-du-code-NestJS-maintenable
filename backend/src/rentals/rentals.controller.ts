@@ -30,10 +30,10 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { RentalsResponseDto } from './dto/rentals-response.dto';
 import { RentalResponseDto } from './dto/rental-response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateRentalDto } from './dto/create-request.dto';
+import { CreateRentalDto } from './dto/create-rental.dto';
 import type { Request } from 'express';
 import { MessageResponseDto } from './dto/message-response.dto';
-import { UpdateRentalDto } from './dto/update-request.dto';
+import { UpdateRentalDto } from './dto/update-rental.dto';
 
 @ApiTags('rentals')
 @ApiBearerAuth()
@@ -163,6 +163,7 @@ export class RentalsController {
   @ApiOkResponse({
     description: 'Location modifiée avec succès',
     type: MessageResponseDto,
+    schema: { example: { message: 'Rental updated!' } },
   })
   @ApiPayloadTooLargeResponse({
     description: 'Fichier trop volumineux (max: 2Mo)',

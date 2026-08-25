@@ -4,7 +4,7 @@ import {
   PartialType,
   PickType,
 } from '@nestjs/swagger';
-import { CreateRentalDto } from './create-request.dto';
+import { CreateRentalDto } from './create-rental.dto';
 
 export class UpdateRentalDto extends IntersectionType(
   OmitType(CreateRentalDto, ['picture']),

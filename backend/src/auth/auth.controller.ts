@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginRequestDto } from './dto/login-request.dto';
-import { RegisterRequestDto } from './dto/register-request.dto';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -46,7 +46,7 @@ export class AuthController {
     description: 'Email inconnu ou mot de passe incorrect',
   })
   @Post('login')
-  async login(@Body() body: LoginRequestDto): Promise<TokenResponseDto> {
+  async login(@Body() body: LoginDto): Promise<TokenResponseDto> {
     return {
       token: await this.authService.login(body.email, body.password),
     };
@@ -74,7 +74,7 @@ export class AuthController {
   })
   @ApiConflictResponse({ description: 'Un compte existe déjà avec cet email' })
   @Post('register')
-  async register(@Body() body: RegisterRequestDto): Promise<TokenResponseDto> {
+  async register(@Body() body: RegisterDto): Promise<TokenResponseDto> {
     return {
       token: await this.authService.register(
         body.email,
