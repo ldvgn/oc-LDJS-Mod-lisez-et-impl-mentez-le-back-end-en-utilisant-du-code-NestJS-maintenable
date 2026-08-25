@@ -25,10 +25,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @throws {UnauthorizedException} Utilisateur introuvable
    */
   async validate(payload: { userId: number }) {
-    const user = await this.usersService.findUniqueById(payload.userId);
-    if (!user) {
+    try {
+      return await this.usersService.findOne(payload.userId);
+    } catch (_) {
       throw new UnauthorizedException();
     }
-    return user;
   }
 }

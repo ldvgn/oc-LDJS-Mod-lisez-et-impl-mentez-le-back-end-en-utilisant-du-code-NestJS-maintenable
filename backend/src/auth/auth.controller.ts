@@ -94,16 +94,14 @@ export class AuthController {
   @ApiOperation({
     summary: "Retourne les informations de l'utilisateur authentifié",
     description:
-      'Route protégée : nécessite un token JWT valide (obtenu via `/auth/login` ou `/auth/register`) transmis dans le header `Authorization: Bearer <token>`.',
+      "Vérifie le token fourni via le header Authorization, puis retourne les informations de l'utilisateur connecté.",
   })
   @ApiBearerAuth()
   @ApiOkResponse({
     description: "Retourne l'utilisateur courant",
     type: UserResponseDto,
   })
-  @ApiUnauthorizedResponse({
-    description: 'Token manquant, invalide, expiré, ou utilisateur introuvable',
-  })
+  @ApiUnauthorizedResponse({ description: 'Utilisateur non authentifié' })
   @UseGuards(JwtGuard)
   @Get('me')
   me(@Req() req: Request) {
