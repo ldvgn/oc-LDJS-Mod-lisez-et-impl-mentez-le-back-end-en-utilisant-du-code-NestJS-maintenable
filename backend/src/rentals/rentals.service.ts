@@ -20,6 +20,15 @@ export class RentalsService {
     private readonly config: ConfigService,
   ) {}
 
+  /**
+   * Formate une location Prisma pour l'API :
+   * 	- décimaux en nombres
+   * 	- `picture` en URL absolue
+   * 	- relation `users` renommée en `owner`
+   *
+   * @param rental Location avec sa relation `users` chargée
+   * @returns La location au format `RentalWithOwnerType`
+   */
   private toRentalWithOwner(
     rental: RentalWithUsersRelation,
   ): RentalWithOwnerType {
